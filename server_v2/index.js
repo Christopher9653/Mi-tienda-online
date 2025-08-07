@@ -1,9 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { pool } = require('./config/db'); // conexión a MySQL
+const { Pool } = require('pg'); // Usamos pg para PostgreSQL
 const path = require('path');
 require('dotenv').config({ path: './config.env' });
+
+// Configuración de la conexión a PostgreSQL
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Necesario para Render con SSL
+  }
+});
+
+// Prueba de conexión inicial
+pool.connect((err) => {
+  if (err) {
+    console.error('❌ Error al conectar a la base de datos:', err);
+  } else {
+    console.log('✅ Conectado a la base de datos PostgreSQL');
+  }
+});
 
 // Middlewares
 app.use(cors({
@@ -12,16 +29,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Conexión a la base de datos
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('❌ Error al conectar a la base de datos:', err);
-  } else {
-    console.log('✅ Conectado a la base de datos MySQL');
-    connection.release(); // Liberar la conexión
-  }
-});
 
 // Rutas
 app.use('/api/usuarios', require('./routes/usuario'));
