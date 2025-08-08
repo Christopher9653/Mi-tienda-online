@@ -14,11 +14,12 @@ const pool = new Pool({
 });
 
 // Prueba de conexión inicial
-pool.connect((err) => {
+pool.connect((err, client, done) => {
   if (err) {
     console.error('❌ Error al conectar a la base de datos:', err);
   } else {
     console.log('✅ Conectado a la base de datos PostgreSQL');
+    done(); // Libera el cliente de vuelta al pool
   }
 });
 
