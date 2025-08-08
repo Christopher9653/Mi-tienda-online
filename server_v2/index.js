@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { Pool } = require('pg'); // Usamos pg para PostgreSQL
+const { Pool } = require('pg'); // Importa Pool desde pg
 const path = require('path');
 require('dotenv').config({ path: './config.env' });
 
@@ -13,7 +13,7 @@ const pool = new Pool({
   }
 });
 
-// Prueba de conexión inicial
+// Prueba de conexión inicial (corregido)
 pool.connect((err, client, done) => {
   if (err) {
     console.error('❌ Error al conectar a la base de datos:', err);
@@ -23,7 +23,7 @@ pool.connect((err, client, done) => {
   }
 });
 
-// Middlewares
+// Resto de tu código...
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true
@@ -31,7 +31,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Rutas
+// Rutas, puerto, etc.
 app.use('/api/usuarios', require('./routes/usuario'));
 app.use('/api/productos', require('./routes/producto'));
 app.use('/api/carrito', require('./routes/carrito'));
@@ -39,12 +39,10 @@ app.use('/api/facturas', require('./routes/factura'));
 app.use('/api/categorias', require('./routes/categoria'));
 app.use('/api/marcas', require('./routes/marca'));
 
-// Ruta de prueba
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Servidor funcionando correctamente' });
 });
 
-// Puerto del servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
